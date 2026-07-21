@@ -18,9 +18,9 @@ except ImportError:
 # If this script is running as a bundled .exe (PyInstaller), and there's an
 # ffmpeg.exe sitting next to it, put that folder on PATH so yt-dlp finds it.
 if getattr(sys, "frozen", False):
-    app_dir = os.path.dirname(sys.executable)
-    if os.path.exists(os.path.join(app_dir, "ffmpeg.exe")):
-        os.environ["PATH"] = app_dir + os.pathsep + os.environ.get("PATH", "")
+    base_dir = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+    if os.path.exists(os.path.join(base_dir, "ffmpeg.exe")):
+        os.environ["PATH"] = base_dir + os.pathsep + os.environ.get("PATH", "")
 
 AUDIO_FORMATS = ["mp3", "m4a", "wav", "flac", "opus", "aac", "vorbis"]
 VIDEO_FORMATS = ["mp4", "mkv", "webm"]
