@@ -26,7 +26,7 @@ Grab the latest `ClipForge.exe` from the [Releases](../../releases) page. No Pyt
 ### Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/clipforge.git
+git clone https://github.com/Kunhtrats/clipforge.git
 cd clipforge
 pip install yt-dlp
 python ClipForge.py
