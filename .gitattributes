@@ -1,2 +1,9 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalize line endings for text files
+* text=auto eol=lf
+
+# Windows-specific scripts should keep CRLF
+*.bat text eol=crlf
+
+# Treat these as binary, don't diff them
+*.exe binary
+*.ico binary
