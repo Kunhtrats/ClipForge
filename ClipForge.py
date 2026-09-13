@@ -36,8 +36,9 @@ class ClipForgeApp:
     def __init__(self, root):
         self.root = root
         self.root.title("ClipForge")
-        self.root.geometry("520x420")
-        self.root.resizable(False, False)
+        self.root.geometry("720x900")
+        self.root.minsize(600, 840)
+        self.root.configure(bg="#f1f5f9")
 
         self.output_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
@@ -45,71 +46,126 @@ class ClipForgeApp:
 
     # ---------- UI ----------
     def _build_ui(self):
-        pad = {"padx": 12, "pady": 6}
+        self.root.option_add("*Font", "{Segoe UI} 10")
+        self.root.option_add("*TCombobox*Listbox.font", "{Segoe UI} 10")
+        style = ttk.Style(self.root)
+        style.theme_use("clam")
+        style.configure("TFrame", background="#ffffff")
+        style.configure("TLabel", background="#ffffff", foreground="#0f172a")
+        style.configure("Muted.TLabel", foreground="#475569")
+        style.configure("Heading.TLabel", font=("Segoe UI", 11, "bold"))
+        style.configure("TButton", padding=(16, 10), background="#eef2ff",
+                        foreground="#3730a3", borderwidth=0)
+        style.map("TButton", background=[("active", "#e0e7ff")])
+        style.configure("Primary.TButton", background="#4f46e5", foreground="white",
+                        font=("Segoe UI", 11, "bold"), padding=(16, 14))
+        style.map("Primary.TButton", background=[("disabled", "#e2e8f0"),
+                  ("pressed", "#3730a3"), ("active", "#4338ca")],
+                  foreground=[("disabled", "#475569")])
+        style.configure("Mode.TRadiobutton", padding=(18, 12), background="#f1f5f9",
+                        foreground="#334155", indicatoron=False)
+        style.map("Mode.TRadiobutton", background=[("selected", "#e0e7ff"),
+                  ("active", "#eef2ff")], foreground=[("selected", "#3730a3")])
+        style.configure("TEntry", padding=10, fieldbackground="white",
+                        bordercolor="#cbd5e1", lightcolor="#cbd5e1", darkcolor="#cbd5e1")
+        style.map("TEntry", bordercolor=[("focus", "#4f46e5")])
+        style.configure("TCombobox", padding=8, arrowsize=16)
+        style.map("TCombobox", fieldbackground=[("readonly", "#f8fafc")],
+                  foreground=[("disabled", "#64748b"), ("readonly", "#0f172a")])
+        style.configure("Horizontal.TProgressbar", background="#4f46e5",
+                        troughcolor="#e2e8f0", borderwidth=0, thickness=8)
 
-        # URL
-        tk.Label(self.root, text="Video URL", anchor="w").pack(fill="x", **pad)
-        self.url_entry = tk.Entry(self.root)
-        self.url_entry.pack(fill="x", padx=12)
+        header = tk.Frame(self.root, bg="#f1f5f9")
+        header.pack(fill="x", padx=28, pady=(24, 18))
+        tk.Label(header, text="ClipForge", font=("Segoe UI", 26, "bold"),
+                 bg="#f1f5f9", fg="#0f172a").pack(anchor="w")
+        tk.Label(header, text="Your favorite content, saved your way.",
+                 bg="#f1f5f9", fg="#475569").pack(anchor="w", pady=(4, 0))
 
-        # Type: audio or video
-        type_frame = tk.LabelFrame(self.root, text="Type")
-        type_frame.pack(fill="x", **pad)
+        card = ttk.Frame(self.root, padding=24)
+        card.pack(fill="x", padx=28)
+        ttk.Label(card, text="1  Paste a link", style="Heading.TLabel").pack(anchor="w")
+        ttk.Label(card, text="Add the URL of the video you want to save.",
+                  style="Muted.TLabel").pack(anchor="w", pady=(4, 10))
+        url_row = ttk.Frame(card)
+        url_row.pack(fill="x")
+        self.url_entry = ttk.Entry(url_row)
+        self.url_entry.pack(side="left", fill="x", expand=True)
+        ttk.Button(url_row, text="Paste", command=self._paste_url).pack(side="right", padx=(8, 0))
 
+        ttk.Label(card, text="2  Make it yours", style="Heading.TLabel").pack(anchor="w", pady=(24, 10))
+        type_frame = ttk.Frame(card)
+        type_frame.pack(fill="x")
         self.media_type = tk.StringVar(value="video")
-        tk.Radiobutton(type_frame, text="Video", variable=self.media_type,
-                        value="video", command=self._refresh_formats).pack(side="left", padx=10, pady=4)
-        tk.Radiobutton(type_frame, text="Audio only", variable=self.media_type,
-                        value="audio", command=self._refresh_formats).pack(side="left", padx=10, pady=4)
+        for value, label in (("video", "Video"), ("audio", "Audio only")):
+            ttk.Radiobutton(type_frame, text=label, variable=self.media_type, value=value,
+                            style="Mode.TRadiobutton", command=self._refresh_formats).pack(
+                                side="left", fill="x", expand=True, padx=(0, 4))
 
-        # Format + resolution
-        opts_frame = tk.Frame(self.root)
-        opts_frame.pack(fill="x", **pad)
-
-        tk.Label(opts_frame, text="Format").grid(row=0, column=0, sticky="w")
-        self.format_var = tk.StringVar()
+        opts_frame = ttk.Frame(card)
+        opts_frame.pack(fill="x", pady=(16, 0))
+        opts_frame.columnconfigure((0, 1), weight=1, uniform="options")
+        ttk.Label(opts_frame, text="File format").grid(row=0, column=0, sticky="w", pady=(0, 6))
+        ttk.Label(opts_frame, text="Video quality").grid(row=0, column=1, sticky="w", pady=(0, 6))
+        self.format_var = tk.StringVar(value=VIDEO_FORMATS[0])
         self.format_menu = ttk.Combobox(opts_frame, textvariable=self.format_var,
-                                         values=VIDEO_FORMATS, state="readonly", width=15)
-        self.format_menu.grid(row=1, column=0, padx=(0, 10))
-        self.format_menu.current(0)
-
-        tk.Label(opts_frame, text="Resolution (video only)").grid(row=0, column=1, sticky="w")
-        self.res_var = tk.StringVar()
+                                       values=VIDEO_FORMATS, state="readonly", width=12)
+        self.format_menu.grid(row=1, column=0, sticky="ew", padx=(0, 12))
+        self.res_var = tk.StringVar(value=RESOLUTIONS[0])
         self.res_menu = ttk.Combobox(opts_frame, textvariable=self.res_var,
-                                      values=RESOLUTIONS, state="readonly", width=15)
-        self.res_menu.grid(row=1, column=1)
-        self.res_menu.current(0)
+                                    values=RESOLUTIONS, state="readonly", width=12)
+        self.res_menu.grid(row=1, column=1, sticky="ew")
+        self.quality_hint = ttk.Label(card, text="Best uses the highest available quality.", style="Muted.TLabel")
+        self.quality_hint.pack(anchor="w", pady=(8, 0))
 
-        # Output folder
-        out_frame = tk.LabelFrame(self.root, text="Save to")
-        out_frame.pack(fill="x", **pad)
+        ttk.Label(card, text="3  Choose a destination", style="Heading.TLabel").pack(anchor="w", pady=(24, 10))
+        out_frame = ttk.Frame(card)
+        out_frame.pack(fill="x")
+        self.out_label = ttk.Label(out_frame, text=self.output_dir, style="Muted.TLabel", anchor="w")
+        self.out_label.pack(side="left", fill="x", expand=True, padx=(0, 12))
+        self.out_label.bind("<Configure>", lambda event: self.out_label.configure(wraplength=max(100, event.width)))
+        ttk.Button(out_frame, text="Browse...", command=self._choose_folder).pack(side="right")
+        self.download_btn = ttk.Button(card, text="Download", command=self._start_download, style="Primary.TButton")
+        self.download_btn.pack(fill="x", pady=(20, 0))
 
-        self.out_label = tk.Label(out_frame, text=self.output_dir, anchor="w", fg="gray20")
-        self.out_label.pack(side="left", fill="x", expand=True, padx=8, pady=6)
-        tk.Button(out_frame, text="Choose...", command=self._choose_folder).pack(side="right", padx=8)
+        activity = ttk.Frame(self.root, padding=(24, 18))
+        activity.pack(fill="both", expand=True, padx=28, pady=(16, 24))
+        ttk.Label(activity, text="Download activity", style="Heading.TLabel").pack(anchor="w")
+        self.status_label = ttk.Label(activity, text="Ready when you are. Paste a link to get started.", style="Muted.TLabel")
+        self.status_label.pack(fill="x", pady=(8, 12))
+        self.status_label.bind("<Configure>", lambda event: self.status_label.configure(wraplength=max(100, event.width)))
+        self.progress = ttk.Progressbar(activity, mode="determinate", maximum=100)
+        self.progress.pack(fill="x", pady=(0, 12))
+        log_frame = ttk.Frame(activity)
+        log_frame.pack(fill="both", expand=True)
+        self.log_box = tk.Text(log_frame, height=3, width=1, state="disabled", bg="#f8fafc",
+                               fg="#475569", relief="flat", padx=10, pady=8, wrap="word",
+                               font=("Segoe UI", 9), highlightthickness=1, highlightbackground="#e2e8f0")
+        scrollbar = ttk.Scrollbar(log_frame, command=self.log_box.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.log_box.configure(yscrollcommand=scrollbar.set)
+        self.log_box.pack(fill="both", expand=True)
+        self.url_entry.focus_set()
 
-        # Download button
-        self.download_btn = tk.Button(self.root, text="Download", command=self._start_download,
-                                       bg="#2b6cb0", fg="white", font=("Arial", 11, "bold"))
-        self.download_btn.pack(fill="x", padx=12, pady=10, ipady=6)
-
-        # Progress bar + log
-        self.progress = ttk.Progressbar(self.root, mode="determinate", maximum=100)
-        self.progress.pack(fill="x", padx=12, pady=(0, 6))
-
-        self.status_label = tk.Label(self.root, text="Ready.", anchor="w", fg="gray20")
-        self.status_label.pack(fill="x", padx=12)
-
-        self.log_box = tk.Text(self.root, height=6, state="disabled", bg="#f5f5f5")
-        self.log_box.pack(fill="both", expand=True, padx=12, pady=8)
+    def _paste_url(self):
+        try:
+            url = self.root.clipboard_get().strip()
+        except tk.TclError:
+            self.status_label.config(text="Your clipboard is empty. Copy a video link first.")
+            return
+        self.url_entry.delete(0, "end")
+        self.url_entry.insert(0, url)
+        self.url_entry.focus_set()
 
     def _refresh_formats(self):
         if self.media_type.get() == "audio":
             self.format_menu["values"] = AUDIO_FORMATS
             self.res_menu.configure(state="disabled")
+            self.quality_hint.config(text="Audio only saves the sound, without the video.")
         else:
             self.format_menu["values"] = VIDEO_FORMATS
             self.res_menu.configure(state="readonly")
+            self.quality_hint.config(text="Best uses the highest available quality.")
         self.format_menu.current(0)
 
     def _choose_folder(self):
