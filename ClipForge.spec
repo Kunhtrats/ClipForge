@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['ClipForge.py'],
+    ['clipforge/app.py'],
     pathex=[],
-    binaries=[('ffmpeg.exe', '.'), ('ffprobe.exe', '.')],
-    datas=[],
+    binaries=[],
+    datas=[('ffmpeg.exe', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

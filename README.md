@@ -1,64 +1,123 @@
-# ClipForge
+# 🎬 ClipForge
 
-A tiny desktop app for downloading audio or video from the web using [yt-dlp](https://github.com/yt-dlp/yt-dlp), with a simple Tkinter GUI.
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/Kunhtrats/clipforge/releases)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/Kunhtrats/clipforge)
 
-Paste a URL, choose **Video** or **Audio only**, pick a format and (for video) a resolution, choose a save folder, and hit **Download**.
+> 🚀 Modern, beautiful desktop app for downloading audio and video using [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
-## Features
-- Video formats: `mp4`, `mkv`, `webm`
-- Audio formats: `mp3`, `m4a`, `wav`, `flac`, `opus`, `aac`, `vorbis`
-- Resolutions: `144` up to `2160`, plus `best` / `worst`
-- Choose your download folder
-- Live progress bar and log
-- Single Python source file: `ClipForge.py`
-- **Windows release is a single, portable `.exe`** — ffmpeg is bundled inside it, nothing else to install
+Built with [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) - Modern, customizable Tkinter UI.
 
-## Download (Windows)
+---
 
-Grab the latest `ClipForge.exe` from the [Releases](../../releases) page. No Python, no ffmpeg, no install — just run it.
+## ✨ Features
 
-## Running from source
+- 🎥 **Video formats**: mp4, mkv, webm
+- 🎵 **Audio formats**: mp3, m4a, wav, flac, opus, aac, vorbis
+- 📐 **Resolutions**: 144p to 4K (2160p), plus `best`/`worst`
+- 📂 **Custom save location**
+- 📊 **Live progress** with speed and ETA
+- 🪵 **Activity log**
+- 🎨 **Modern UI** with CustomTkinter
+- 💻 **Cross-platform**: Windows, macOS, Linux
 
-### Requirements
+---
+
+## 📦 Installation
+
+### Option 1: Download executable (Windows)
+
+Grab the latest `ClipForge.exe` from [**Releases**](../../releases) - portable, no install needed.
+
+### Option 2: Run from source
+
+**Requirements:**
 - Python 3.8+
-- [ffmpeg](https://ffmpeg.org/download.html) installed and available on your system `PATH` (required for audio extraction and merging video/audio). Only needed when running the `.py` directly — the packaged `.exe` already has it embedded.
-
-### Setup
+- [ffmpeg](https://ffmpeg.org/download.html) on your system PATH
 
 ```bash
 git clone https://github.com/Kunhtrats/clipforge.git
 cd clipforge
-pip install yt-dlp
-python ClipForge.py
+pip install -r requirements.txt
+python -m clipforge.app
 ```
 
-## Usage
+---
 
-1. Paste the video URL.
-2. Choose **Video** or **Audio only**.
-3. Pick a format (and resolution, if video).
-4. Choose where to save the file.
-5. Click **Download** and watch the progress bar.
+## 🎯 Usage
 
-## Building the single-file .exe yourself
+1. 📋 **Paste** a video URL (YouTube, Twitter, etc.)
+2. 🔘 Choose **Video** or **Audio Only**
+3. ⚙️ Pick format and resolution
+4. 📁 Select save location
+5. ⬇️ Click **Download** and watch the magic happen
 
-The repo includes a ready-to-use `ClipForge.spec` for [PyInstaller](https://pyinstaller.org/).
+---
 
-1. Download `ffmpeg.exe` and `ffprobe.exe` (a static Windows build, e.g. from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/)) and place them in the repo root, next to `ClipForge.py`.
-2. Install build tools:
-   ```bash
-   pip install pyinstaller yt-dlp
-   ```
-3. Build:
-   ```bash
-   pyinstaller ClipForge.spec
-   ```
-4. The finished binary is at `dist/ClipForge.exe` — a single portable file with ffmpeg embedded inside it.
+## 🏗️ Build from source
 
-## Notes
-- Tkinter ships with most Python installations. On Linux, if it's missing, install it via your package manager (e.g. `sudo apt install python3-tk`).
-- ffmpeg is distributed here under the LGPL (using an LGPL/"shared" build, not a GPL "full" build), so it can be redistributed alongside this project's code. See the [ffmpeg license page](https://ffmpeg.org/legal.html) for details.
-- This project is just a GUI wrapper around yt-dlp — it doesn't circumvent DRM or host any content. Downloading material you don't have the rights to may still violate the terms of service of the source site or local copyright law. Use responsibly.
+### Package as executable (PyInstaller)
 
-## License
-MIT
+```bash
+pip install pyinstaller customtkinter yt-dlp
+
+# Windows
+pyinstaller --onefile --windowed --add-data "ffmpeg.exe;." --name ClipForge clipforge/app.py
+
+# macOS/Linux
+pyinstaller --onefile --windowed --add-data "ffmpeg:." --name ClipForge clipforge/app.py
+```
+
+Output: `dist/ClipForge.exe` (or `ClipForge` on Unix)
+
+---
+
+## 📂 Project Structure
+
+```
+clipforge/
+├── clipforge/
+│   ├── __init__.py
+│   └── app.py          # Main application
+├── requirements.txt
+├── README.md
+├── LICENSE
+└── .gitignore
+```
+
+---
+
+## 🔧 Tech Stack
+
+- **[CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)** - Modern Tkinter UI
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** - Video/audio download engine
+- **[ffmpeg](https://ffmpeg.org)** - Media processing
+
+---
+
+## ⚖️ Legal
+
+- ✅ MIT License - free to use, modify, distribute
+- ⚠️ ClipForge is a GUI wrapper for yt-dlp
+- 🚫 Does not circumvent DRM or host content
+- ⚠️ Downloading copyrighted material without permission may violate terms of service or laws in your jurisdiction
+- 📜 Use responsibly and respect content creators' rights
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE) © 2026 Miguel Alarcón
+
+---
+
+## 🙏 Credits
+
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - The powerhouse behind downloads
+- [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) - Beautiful modern UI
+- [ffmpeg](https://ffmpeg.org) - Media processing (LGPL)
+
+---
+
+**Made with ❤️ and Python**

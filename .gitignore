@@ -3,19 +3,29 @@ __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
+*.eggs/
+.Python
 
-# PyInstaller build output
+# PyInstaller
 build/
 dist/
+*.spec
 
-# ffmpeg binaries (not part of the repo, downloaded separately per README)
+# ffmpeg binaries
 ffmpeg.exe
 ffprobe.exe
+ffmpeg
+ffprobe
 
-# Editor / OS junk
+# Old files
+old/
+
+# IDE
 .vscode/
 .idea/
 *.swp
+
+# OS
 .DS_Store
 Thumbs.db
 
@@ -23,3 +33,9 @@ Thumbs.db
 venv/
 .venv/
 env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
